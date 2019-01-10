@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Copper Core
+Comment=Connect to the Copper P2P Network
+Comment[de]=Verbinde mit dem Copper peer-to-peer Netzwerk
+Comment[fr]=Copper, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Copper, eşten eşe kriptografik sanal para birimi
+Exec=copper-qt %u
+Terminal=false
+Type=Application
+Icon=copper128
+MimeType=x-scheme-handler/copper;
+Categories=Office;Finance;

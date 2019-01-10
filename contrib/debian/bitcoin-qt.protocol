@@ -1,0 +1,11 @@
+[Protocol]
+exec=copper-qt '%u'
+protocol=copper
+input=none
+output=none
+helper=true
+listing=
+reading=false
+writing=false
+makedir=false
+deleting=false

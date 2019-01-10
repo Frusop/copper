@@ -1,0 +1,6 @@
+usr/local/bin/copper-qt usr/bin
+share/pixmaps/copper32.xpm usr/share/pixmaps
+share/pixmaps/copper16.xpm usr/share/pixmaps
+share/pixmaps/copper128.png usr/share/pixmaps
+debian/copper-qt.desktop usr/share/applications
+debian/copper-qt.protocol usr/share/kde4/services/

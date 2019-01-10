@@ -1,0 +1,33 @@
+# /etc/conf.d/copperd: config file for /etc/init.d/copperd
+
+# Config file location
+#COPPERD_CONFIGFILE="/etc/copper/copper.conf"
+
+# What directory to write pidfile to?  (created and owned by $COPPERD_USER)
+#COPPERD_PIDDIR="/var/run/copperd"
+
+# What filename to give the pidfile
+#COPPERD_PIDFILE="${COPPERD_PIDDIR}/copperd.pid"
+
+# Where to write copperd data (be mindful that the blockchain is large)
+#COPPERD_DATADIR="/var/lib/copperd"
+
+# User and group to own copperd process
+#COPPERD_USER="copper"
+#COPPERD_GROUP="copper"
+
+# Path to copperd executable
+#COPPERD_BIN="/usr/bin/copperd"
+
+# Nice value to run copperd under
+#COPPERD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#COPPERD_OPTS=""
+
+# The timeout in seconds OpenRC will wait for copperd to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+COPPERD_SIGTERM_TIMEOUT=60

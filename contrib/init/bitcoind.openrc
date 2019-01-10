@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/copper/.copper" ]; then
+	COPPERD_DEFAULT_DATADIR="/var/lib/copper/.copper"
+else
+	COPPERD_DEFAULT_DATADIR="/var/lib/copperd"
+fi
+
+COPPERD_CONFIGFILE=${COPPERD_CONFIGFILE:-/etc/copper/copper.conf}
+COPPERD_PIDDIR=${COPPERD_PIDDIR:-/var/run/copperd}
+COPPERD_PIDFILE=${COPPERD_PIDFILE:-${COPPERD_PIDDIR}/copperd.pid}
+COPPERD_DATADIR=${COPPERD_DATADIR:-${COPPERD_DEFAULT_DATADIR}}
+COPPERD_USER=${COPPERD_USER:-${COPPER_USER:-copper}}
+COPPERD_GROUP=${COPPERD_GROUP:-copper}
+COPPERD_BIN=${COPPERD_BIN:-/usr/bin/copperd}
+COPPERD_NICE=${COPPERD_NICE:-${NICELEVEL:-0}}
+COPPERD_OPTS="${COPPERD_OPTS:-${COPPER_OPTS}}"
+
+name="Copper Core Daemon"
+description="Copper cryptocurrency P2P network daemon"
+
+command="/usr/bin/copperd"
+command_args="-pid=\"${COPPERD_PIDFILE}\" \
+		-conf=\"${COPPERD_CONFIGFILE}\" \
+		-datadir=\"${COPPERD_DATADIR}\" \
+		-daemon \
+		${COPPERD_OPTS}"
+
+required_files="${COPPERD_CONFIGFILE}"
+start_stop_daemon_args="-u ${COPPERD_USER} \
+			-N ${COPPERD_NICE} -w 2000"
+pidfile="${COPPERD_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${COPPERD_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${COPPERD_USER}:${COPPERD_GROUP}" \
+	"${COPPERD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${COPPERD_USER}:${COPPERD_GROUP}" \
+	"${COPPERD_PIDDIR}"
+
+	checkpath -f \
+	-o ${COPPERD_USER}:${COPPERD_GROUP} \
+	-m 0660 \
+	${COPPERD_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${COPPERD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run copperd."
+		eerror "The setting must appear in ${COPPERD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Copper Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

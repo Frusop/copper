@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#  copperd The copper core server.
+#
+#
+# chkconfig: 345 80 20
+# description: copperd
+# processname: copperd
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# you can override defaults in /etc/sysconfig/copperd, see below
+if [ -f /etc/sysconfig/copperd ]; then
+        . /etc/sysconfig/copperd
+fi
+
+RETVAL=0
+
+prog=copperd
+# you can override the lockfile via COPPERD_LOCKFILE in /etc/sysconfig/copperd
+lockfile=${COPPERD_LOCKFILE-/var/lock/subsys/copperd}
+
+# copperd defaults to /usr/bin/copperd, override with COPPERD_BIN
+copperd=${COPPERD_BIN-/usr/bin/copperd}
+
+# copperd opts default to -disablewallet, override with COPPERD_OPTS
+copperd_opts=${COPPERD_OPTS--disablewallet}
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $DAEMONOPTS $copperd $copperd_opts
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $prog
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: service $prog {start|stop|status|restart}"
+        exit 1
+        ;;
+esac

@@ -1,0 +1,8 @@
+/usr/bin/copper-cli		--	gen_context(system_u:object_r:copper_exec_t,s0)
+/usr/sbin/copperd		--	gen_context(system_u:object_r:copper_exec_t,s0)
+/usr/lib(64)?/copper/copperd		--	gen_context(system_u:object_r:copper_exec_t,s0)
+
+/etc/copper(/.*)?		gen_context(system_u:object_r:copper_conf_t,s0)
+/var/lib/copper(/.*)?		gen_context(system_u:object_r:copper_var_lib_t,s0)
+
+(/var)?/run/copperd(/.*)?   gen_context(system_u:object_r:copper_var_run_t,s0)
